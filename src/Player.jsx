@@ -7,6 +7,12 @@ import useGame from "./stores/useGame"
 
 export const Player = () => {
 
+	let music
+
+	music = new Audio('/song.mp3')
+	music.loop = true	
+	music.volume = 1
+
 	const body = useRef()
 
 	const [ subscribeKeys, getKeys ] = useKeyboardControls()
@@ -56,7 +62,10 @@ export const Player = () => {
 		)
 
 		const unsubscribeAny = subscribeKeys(
-			() => start()
+			() => {
+				start()
+				music.play()
+			}
 		)
 
 		return () => {
@@ -68,7 +77,7 @@ export const Player = () => {
 
 	useFrame((state, delta) => {
 
-		const { forward, backward, leftward, rightward, jump } = getKeys()
+		const { forward, backward, leftward, rightward, jump, r } = getKeys()
 
 		const impulse = { x: 0, y: 0, z: 0 }
 		const torque = { x: 0, y: 0, z: 0 }
@@ -98,6 +107,10 @@ export const Player = () => {
 
 		body.current.applyImpulse(impulse)
 		body.current.applyTorqueImpulse(torque)
+
+		if (r) {
+			restart()
+		}
 
 		/**
 		 * Camera
